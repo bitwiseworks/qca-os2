@@ -118,7 +118,11 @@ void* MemoryMapping_Allocator::alloc_block(u32bit n)
          char* filepath;
       };
 
+#ifdef __OS2__
+   TemporaryFile file("/@unixroot/var/tmp/botan_");
+#else
    TemporaryFile file("/tmp/botan_");
+#endif
 
    if(file.get_fd() == -1)
       throw MemoryMapping_Failed("Could not create file");

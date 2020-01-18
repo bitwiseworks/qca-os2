@@ -461,7 +461,7 @@ QStringList pluginPaths()
 	const QString qcaPluginPath = qgetenv("QCA_PLUGIN_PATH");
 	if (!qcaPluginPath.isEmpty())
 	{
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		QLatin1Char pathSep(';');
 #else
 		QLatin1Char pathSep(':');

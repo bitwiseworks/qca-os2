@@ -1320,6 +1320,11 @@ QStringList plugin_priorities(Provider *defaultProvider)
 	return that->shared.plugin_priorities();
 }
 
+#ifndef __OS2__
 #include "qca_default.moc"
+#endif
 
 }
+#ifdef __OS2__
+#include "qca_default.moc"
+#endif

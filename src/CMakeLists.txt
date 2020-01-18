@@ -84,9 +84,9 @@ ADD_DEFINITIONS(
   -DBOTAN_EXT_MUTEX_QT
 )
 
-if(UNIX)
+if(UNIX OR OS2)
    ADD_DEFINITIONS( -DBOTAN_EXT_ALLOC_MMAP)
-endif(UNIX)
+endif(UNIX OR OS2)
 
 SET( botan_SOURCES
 	${botan_BASE}/util.cpp
@@ -114,10 +114,10 @@ SET( botan_SOURCES
 	${botan_BASE}/parsing.cpp
 )
 
-IF (UNIX)
+IF (UNIX OR OS2)
   SET( botan_SOURCES ${botan_SOURCES} ${botan_BASE}/ml_unix/mlock.cpp)
   SET( botan_SOURCES ${botan_SOURCES} ${botan_BASE}/alloc_mmap/mmap_mem.cpp)
-ENDIF (UNIX)
+ENDIF (UNIX OR OS2)
 
 IF(WIN32)
   SET( botan_SOURCES ${botan_SOURCES} ${botan_BASE}/ml_win32/mlock.cpp)

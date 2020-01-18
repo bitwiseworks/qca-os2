@@ -120,6 +120,8 @@ if (WIN32)
  add_definitions(-DWIN32_LEAN_AND_MEAN)
 elseif (APPLE)
  set(CMAKE_DEBUG_POSTFIX "_debug")
+elseif (OS2)
+ set(CMAKE_DEBUG_POSTFIX "d")
 endif (WIN32)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -309,6 +311,8 @@ else ( WIN32 )
       "/etc/pki/tls/cert.pem"
       "/etc/ssl/ca-bundle.pem"
       "/usr/share/curl/curl-ca-bundle.crt"
+      "/@unixroot/etc/ssl/certs/ca-certificates.crt"
+      "/@unixroot/etc/pki/tls/cert.pem"
     )
     foreach (_current_try ${toTry})
       if(EXISTS ${_current_try})

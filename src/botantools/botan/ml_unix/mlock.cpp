@@ -52,7 +52,11 @@ namespace Botan {
 *************************************************/
 void lock_mem(void* ptr, u32bit bytes)
    {
+#ifndef __OS2__
    mlock(ptr, bytes);
+#else
+   return;
+#endif
    }
 
 /*************************************************
@@ -60,7 +64,11 @@ void lock_mem(void* ptr, u32bit bytes)
 *************************************************/
 void unlock_mem(void* ptr, u32bit bytes)
    {
+#ifndef __OS2__
    munlock(ptr, bytes);
+#else
+   return;
+#endif
    }
 
 }

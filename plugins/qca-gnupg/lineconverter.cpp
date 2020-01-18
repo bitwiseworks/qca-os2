@@ -84,7 +84,7 @@ QByteArray LineConverter::update(const QByteArray &buf)
 	{
 		// On Windows use DOS line ending style.
 		// On UNIX don't do any convertation. Return buf as is.
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 		QByteArray out;
 		int prev = 0;
 		int at = 0;

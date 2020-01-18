@@ -303,7 +303,7 @@ void GpgAction::start()
 	}
 	case GpgOp::SecretKeyringFile:
 	{
-#ifndef Q_OS_WIN
+#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 		args += "--display-charset=utf-8";
 #endif
 		args += "--list-secret-keys";
@@ -312,7 +312,7 @@ void GpgAction::start()
 	}
 	case GpgOp::PublicKeyringFile:
 	{
-#ifndef Q_OS_WIN
+#if !defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 		args += "--display-charset=utf-8";
 #endif
 		args += "--list-public-keys";
@@ -772,7 +772,7 @@ void GpgAction::processResult(int code)
 	QString outstr;
 	QString errstr;
 	
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	if (!utf8Output)
 	{
 		outstr = QString::fromLocal8Bit(buf_stdout);
@@ -783,7 +783,7 @@ void GpgAction::processResult(int code)
 #endif
 		outstr = QString::fromUtf8(buf_stdout);
 		errstr = QString::fromUtf8(buf_stderr);
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	}
 #endif
 

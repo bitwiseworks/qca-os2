@@ -114,7 +114,7 @@ QString find_bin()
 	// gpg and gpg2 has identical semantics
 	// so any from them can be used
 	QStringList bins;
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(O_OS_OS2)
 	bins << "gpg.exe" << "gpg2.exe";
 #else
 	bins << "gpg" << "gpg2";
@@ -137,7 +137,7 @@ QString find_bin()
 #endif
 
 	// Look up at PATH environment
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 	QString pathSep = ";";
 #else
 	QString pathSep = ":";

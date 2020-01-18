@@ -45,7 +45,7 @@
 # include <QMutex>
 #endif
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 # include <unistd.h>
 # include <fcntl.h>
 # include <errno.h>
@@ -54,6 +54,10 @@
 # ifdef HAVE_SYS_FILIO_H
 #  include <sys/filio.h>
 # endif
+#endif
+
+#ifdef Q_OS_OS2
+# include <sys/socket.h>
 #endif
 
 #define USE_POLL
@@ -68,7 +72,7 @@
 
 namespace QCA {
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 // adapted from qt
 Q_GLOBAL_STATIC(QMutex, ign_mutex)
 static bool ign_sigpipe = false;
@@ -112,7 +116,7 @@ static bool pipe_dword_overflows_int(DWORD dw)
 }
 #endif
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 static int pipe_size_t_cap_to_int(size_t size)
 {
 	if(sizeof(int) <= sizeof(size_t))
@@ -132,7 +136,7 @@ static bool pipe_set_blocking(Q_PIPE_ID pipe, bool b)
 		return false;
 	return true;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	int flags = fcntl(pipe, F_GETFL);
 	if(!b)
 		flags |= O_NONBLOCK;
@@ -157,7 +161,7 @@ static bool pipe_set_inheritable(Q_PIPE_ID pipe, bool b, Q_PIPE_ID *newPipe = 0)
 	*newPipe = h;
 	return true;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	if(newPipe)
 		*newPipe = pipe;
 	int flags = fcntl(pipe, F_GETFD);
@@ -180,7 +184,7 @@ static int pipe_read_avail(Q_PIPE_ID pipe)
 	if(PeekNamedPipe(pipe, 0, 0, 0, &i, 0))
 		bytesAvail = pipe_dword_cap_to_int(i);
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	size_t nbytes = 0;
 	if(ioctl(pipe, FIONREAD, (char *)&nbytes) >= 0)
 		bytesAvail = pipe_size_t_cap_to_int(nbytes);
@@ -219,7 +223,7 @@ static int pipe_read(Q_PIPE_ID pipe, char *data, int max, bool *eof)
 	}
 	bytesRead = (int)r; // safe to cast, since 'max' is signed
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	int r = 0;
 	int ret = read(pipe, data, max);
 	if(ret == -1)
@@ -251,7 +255,7 @@ static int pipe_write(Q_PIPE_ID pipe, const char *data, int size)
 		return -1;
 	return (int)written; // safe to cast, since 'size' is signed
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	ignore_sigpipe();
 	int r = 0;
 	int ret = write(pipe, data, size);
@@ -968,7 +972,7 @@ public:
 	QPipeWriter *pipeWriter;
 	QPipeReader *pipeReader;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	SafeSocketNotifier *sn_read, *sn_write;
 #endif
 
@@ -980,7 +984,7 @@ public:
 		pipeReader = 0;
 		dec = 0;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 		sn_read = 0;
 		sn_write = 0;
 #endif
@@ -1008,7 +1012,7 @@ public:
 		dec = 0;
 		consoleMode = false;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 		delete sn_read;
 		sn_read = 0;
 		delete sn_write;
@@ -1019,7 +1023,7 @@ public:
 #ifdef Q_OS_WIN
 			CloseHandle(pipe);
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 			::close(pipe);
 #endif
 			pipe = INVALID_Q_PIPE_ID;
@@ -1085,7 +1089,7 @@ public:
 			//   notifications.
 			readTimer->setSingleShot(true);
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 			pipe_set_blocking(pipe, false);
 
 			// socket notifier
@@ -1096,7 +1100,7 @@ public:
 		else
 		{
 			// for windows, the blocking mode is chosen by the QPipeWriter
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 			pipe_set_blocking(pipe, false);
 
 			// socket notifier
@@ -1168,7 +1172,7 @@ public slots:
 
 	void sn_read_activated(int)
 	{
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 		if(blockReadNotify)
 			return;
 
@@ -1179,7 +1183,7 @@ public slots:
 
 	void sn_write_activated(int)
 	{
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 		writeResult = 0;
 		lastWritten = lastTaken;
 
@@ -1223,7 +1227,7 @@ int QPipeDevice::idAsInt() const
 	memcpy(&dw, &d->pipe, sizeof(DWORD));
 	return (int)dw; // FIXME? assumes handle value fits in signed int
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	return d->pipe;
 #endif
 }
@@ -1268,7 +1272,7 @@ bool QPipeDevice::setInheritable(bool enabled)
 #endif
 	return true;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	return pipe_set_inheritable(d->pipe, enabled, 0);
 #endif
 }
@@ -1422,7 +1426,7 @@ int QPipeDevice::read(char *data, int maxsize)
 
 	return offset;
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	bool done;
 	int r = pipe_read(d->pipe, data, maxsize, &done);
 	if(done)
@@ -1506,7 +1510,7 @@ int QPipeDevice::write(const char *data, int size)
 		return -1;
 	}
 #endif
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	r = pipe_write(d->pipe, data, size);
 	d->lastTaken = r;
 	if(r == -1)
@@ -2146,9 +2150,13 @@ bool QPipe::create()
 	o.take(w, QPipeDevice::Write);
 #endif
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) || defined(Q_OS_OS2)
 	int p[2];
+#ifdef Q_OS_OS2
+        if (socketpair(AF_UNIX, SOCK_STREAM,0, p) == -1)
+#else
 	if(pipe(p) == -1)
+#endif
 		return false;
 	if(!pipe_set_inheritable(p[0], false, 0) ||
 		!pipe_set_inheritable(p[1], false, 0))
