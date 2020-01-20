@@ -36,7 +36,7 @@
 
 #include <QtGlobal>
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_OS2)
 # ifndef QCA_STATIC
 #  ifdef QCA_MAKEDLL
 #   define QCA_EXPORT Q_DECL_EXPORT
