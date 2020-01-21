@@ -147,6 +147,13 @@ if(WIN32)
 	TARGET_LINK_LIBRARIES(${QCA_LIB_NAME} crypt32 ws2_32)
 endif(WIN32)
 
+if(OS2)
+  set_target_properties(${QCA_LIB_NAME} PROPERTIES
+    OS2_DEF_VENDOR "$ENV{VENDOR}"
+    OS2_DEF_PATCH "${QCA_LIB_PATCH_VERSION}"
+    OS2_DEF_VERSION "${QCA_LIB_VERSION_STRING}")
+endif()
+
 if(APPLE)
   set(COREFOUNDATION_LIBRARY "-framework CoreFoundation")
   set(COREFOUNDATION_LIBRARY_SECURITY "-framework Security")
